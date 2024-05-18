@@ -12,11 +12,14 @@ def astar(initial_state):
         priority, current_state, parent_state = frontier.popleft()
 
         if current_state.is_goal():
+             
+            #TODO: add method that check if wwe have 2 or more colors in seperate tubes
             path = [current_state]
             while parent_state:
                 path.append(parent_state[1])
                 parent_state = parent_state[2]
-            return path[::-1]
+            path = path[::-1] # Return the path in reverse order
+            return path
 
         explored.add(current_state)
 
