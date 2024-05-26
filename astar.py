@@ -1,6 +1,7 @@
 from collections import deque
+from LiquidPuzzle import LiquidPuzzleState
 
-def astar(initial_state):
+def astar(initial_state: LiquidPuzzleState):
     """
     A* search algorithm for the Liquid Puzzle game.
     Returns the path to the solution if one exists, None otherwise.
@@ -37,7 +38,7 @@ def astar(initial_state):
     return None
 
 
-def heuristic(state):
+def heuristic(state: LiquidPuzzleState):
     """
     Heuristic function to estimate the cost of reaching the goal state
     from the current state.
