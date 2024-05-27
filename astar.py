@@ -1,41 +1,59 @@
 from collections import deque
 from LiquidPuzzle import LiquidPuzzleState
 
+
 def astar(initial_state: LiquidPuzzleState):
     """
     A* search algorithm for the Liquid Puzzle game.
-    Returns the path to the solution if one exists, None otherwise.
+
+    Args:
+        initial_state (LiquidPuzzleState): The initial state of the game.
+
+    Returns:
+        tuple: A tuple containing the path to the solution and the number of moves taken.
+               The path is a list of states from the initial state to the goal state.
+               If a solution does not exist, None is returned.
     """
     frontier = deque([(heuristic(initial_state), initial_state, None)])
     explored = set()
+    explored_states = {}
+    moves = 0
 
     while frontier:
         priority, current_state, parent_state = frontier.popleft()
+        current_state_hash = hash(current_state)
 
         if current_state.is_goal():
-             
-            #TODO: add method that check if we have 2 or more colors in seperate tubes
             path = [current_state]
             while parent_state:
                 path.append(parent_state[1])
                 parent_state = parent_state[2]
-            path = path[::-1] # Return the path in reverse order
-            return path
+            path.reverse() # Return the path in reverse order
+            return path, moves
 
-        explored.add(current_state)
+        if current_state_hash not in explored:
+            explored.add(current_state_hash)
+            explored_states[current_state_hash] = current_state
 
-        for move in current_state.get_valid_moves():
-            next_state = current_state.apply_move(move)
+            for move in current_state.get_valid_moves():
+                next_state = current_state.apply_move(move)
+                next_state_hash = hash(next_state)
 
-            if next_state not in explored:
-                next_priority = heuristic(next_state)
-                frontier.append(
-                    (next_priority, next_state, (priority, current_state, parent_state))
-                )
+                if next_state_hash not in explored:
+                    moves += 1
+                    next_priority = heuristic(next_state)
+                    frontier.append(
+                        (
+                            next_priority,
+                            next_state,
+                            (priority, current_state, parent_state),
+                        )
+                    )
 
-        frontier = deque(sorted(frontier, key=lambda x: x[0]))
+            frontier = deque(sorted(frontier, key=lambda x: x[0]))
 
     return None
+
 
 def heuristic(state: LiquidPuzzleState) -> int:
     """
@@ -69,5 +87,16 @@ def heuristic(state: LiquidPuzzleState) -> int:
 
     return total_moves
 
+    """
+    
+            for move in current_state.get_valid_moves():
+                if move not in explored:
+                    next_state = current_state.apply_move(move)
+                        next_priority = heuristic(next_state)
+                        frontier.append(
+                            (next_priority, next_state, (priority, current_state, parent_state))
+                        )
+    
 
-
+    
+    """
