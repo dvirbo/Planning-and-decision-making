@@ -14,7 +14,7 @@ def astar(initial_state: LiquidPuzzleState):
 
         if current_state.is_goal():
              
-            #TODO: add method that check if wwe have 2 or more colors in seperate tubes
+            #TODO: add method that check if we have 2 or more colors in seperate tubes
             path = [current_state]
             while parent_state:
                 path.append(parent_state[1])
@@ -37,24 +37,37 @@ def astar(initial_state: LiquidPuzzleState):
 
     return None
 
+def heuristic(state: LiquidPuzzleState) -> int:
+    """
+    Calculates the heuristic value for the given state in the Liquid Puzzle problem.
 
-def heuristic(state: LiquidPuzzleState):
+    The heuristic value represents the estimated number of moves required to separate all colors in the state.
+
+    Args:
+        state (LiquidPuzzleState): The current state of the Liquid Puzzle problem.
+
+    Returns:
+        int: The heuristic value for the given state.
     """
-    Heuristic function to estimate the cost of reaching the goal state
-    from the current state.
-    """
-    cost = 0
-    colors = {}
+    total_moves = 0
+    color_counts = {}
+
+    # Count the number of each color in the state
     for tube in state.tubes:
         for color in tube:
-            if color not in colors:
-                colors[color] = 0
-            colors[color] += 1
+            color_counts[color] = color_counts.get(color, 0) + 1
 
-    for count in colors.values():
-        cost += count - 1
+    # For each color, calculate the minimum number of moves required to separate it
+    for color, count in color_counts.items():
+        # If the color is already separated, no moves are required
+        if count == len(state.tubes):
+            continue
 
-    return cost
+        # Otherwise, the minimum number of moves is the count minus the number of empty tubes
+        empty_tubes = len([tube for tube in state.tubes if not tube])
+        total_moves += max(0, count - empty_tubes)
+
+    return total_moves
 
 
 
